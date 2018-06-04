@@ -1,0 +1,80 @@
+/* eslint-disable  func-names */
+/* eslint quote-props: ["error", "consistent"]*/
+/**
+ * This sample demonstrates a simple skill built with the Amazon Alexa Skills
+ * nodejs skill development kit.
+ * This sample supports multiple lauguages. (en-US, en-GB, de-DE).
+ * The Intent Schema, Custom Slots and Sample Utterances for this skill, as well
+ * as testing instructions are located at https://github.com/alexa/skill-sample-nodejs-fact
+ **/
+
+'use strict';
+const AWS = require('aws-sdk');
+const Alexa = require('alexa-sdk');
+
+const APP_ID = undefined;
+
+
+const handlers = {
+    'LaunchRequest': function () {
+        this.emit(':ask', 'Welcome to CSS colors');
+    },
+    'Unhandled': function () {
+        this.emit(':ask', 'Sorry I didnt understand that. Say help for assistance.');
+    },
+    'AMAZON.HelpIntent': function () {
+        this.emit(':ask', 'you can pick a color by saying Pick yellow');
+    },
+    'ShowCssColorsIntent': function () {
+        var colorClient = new AWS.DynamoDB.DocumentClient();
+        var colorSelected = this.event.request.intent.slots.MyColor.value;
+
+        var params = {
+            TableName: "CssColors",
+            Key: {
+                "colorId": 0,
+            },
+            UpdateExpression: "set colorToShow = :newColor",
+            ExpressionAttributeValues: {
+                ":newColor" : colorSelected
+            }
+        };
+
+        colorClient.update(params, (() => {
+           this.emit(':ask', 'You choose ' + colorSelected);
+        }));
+
+    },
+    'ShowAllCssColorsIntent': function () {
+        var colorClient = new AWS.DynamoDB.DocumentClient();
+        var colorNumber = 0;
+
+        var params = {
+            TableName: "CssColors",
+            Key: {
+                "colorId": 0,
+            },
+            UpdateExpression: "set colorToShow = :newColor",
+            ExpressionAttributeValues: {
+                ":newColor" : colorNumber
+            }
+        };
+
+        colorClient.update(params, (()=> {
+           this.emit(':ask', 'you asked to show all colors');
+        }));
+    },
+    'AMAZON.CancelIntent': function () {
+        this.emit(':tell', 'bye bye, have a nice day');
+    },
+    'AMAZON.StopIntent': function () {
+        this.emit(':tell', 'bye bye, have a nice day');
+    },
+};
+
+exports.handler = function (event, context, callback) {
+    const alexa = Alexa.handler(event, context, callback);
+    alexa.appId = APP_ID;
+    alexa.registerHandlers(handlers);
+    alexa.execute();
+};

@@ -1,0 +1,25 @@
+'use strict';
+var AWS = require('aws-sdk');
+var dynamodb = new AWS.DynamoDB();
+var colorClient = new AWS.DynamoDB.DocumentClient();
+
+var params = {
+    TableName: "CssColors",
+    Key: {
+        "colorId": 0
+    }
+};
+
+var colorToDisplay = "color is not set";
+
+exports.handler = (event, context, callback) => {
+    colorClient.get(params, function(err, data) {
+       if(err) {
+           return console.error('that did not work');
+       }
+       var payload = JSON.stringify(data, null, 2);
+       var obj = JSON.parse(payload);
+       colorToDisplay = obj.Item.colorToShow;
+       callback(null, {'cssColor': colorToDisplay});
+    });
+};
