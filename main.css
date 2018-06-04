@@ -1,0 +1,31 @@
+#mainWrapper {
+  display: flex;
+}
+
+#mainWrapper > div {
+  flex: 0 50%;
+  box-sizing:border-box
+}
+
+#all_color_container {
+  width: 50%;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: scroll;
+}
+
+#color_container {
+  width: 50%;
+  border: 1px dotted black;
+  margin-top: 20px;
+}
+
+.colorbox{
+  width: 100px;
+  height: 100px;
+  margin: 20px;
+  text-align: center;
+  line-height: 100px;
+  font-size: 12px;
+  color: #3e3e3e;
+}
